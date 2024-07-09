@@ -1,0 +1,93 @@
+all: \
+	iso/menu/menu.arc \
+	iso/menu/backgrounds/week.arc \
+	iso/menu/loading.tim \
+	iso/icon16.tim \
+	iso/font/fonts.tim \
+	iso/stage/note4k.tim \
+	iso/stage/note5k.tim \
+	iso/stage/note6k.tim \
+	iso/stage/note7k.tim \
+	iso/stage/note9k.tim \
+	iso/stage/type4k0.tim \
+	iso/stage/type5k0.tim \
+	iso/stage/type6k0.tim \
+	iso/stage/type7k0.tim \
+	iso/stage/type9k0.tim \
+	iso/stage/type4k1.tim \
+	iso/stage/type5k1.tim \
+	iso/stage/type6k1.tim \
+	iso/stage/type7k1.tim \
+	iso/stage/type9k1.tim \
+	iso/stage/static.tim \
+	iso/stage/hud0.tim \
+	iso/stage/hud1.tim \
+	iso/stage/hudextra.tim \
+	iso/stage/phase3.tim \
+	iso/stage/pause.tim \
+	iso/bf/main.arc \
+	iso/bf/dead.arc \
+	iso/apple/main.arc \
+	iso/apple/dead.arc \
+	iso/dad/main.arc \
+	iso/orange/main.arc \
+	iso/gf/main.arc \
+	iso/gf/tut.arc \
+	iso/gf/speaker.tim \
+	iso/week1/back.arc \
+	iso/kitchen/back.arc \
+	iso/kitchen/apple.arc \
+	iso/kitchen/fruit.arc \
+	iso/kitchen/orange.arc \
+	iso/kitchen/plat.arc \
+	iso/kitchen/rapple.arc \
+	iso/kitchen/speed.arc \
+	iso/kitchen/static.arc \
+	iso/kitchen/hand.arc \
+
+iso/%.tim: iso/%.png
+	tools/funkintimconv/funkintimconv $@ $<
+
+iso/%.arc:
+	tools/funkinarcpak/funkinarcpak $@ $^
+
+# Menu
+iso/menu/menu.arc: iso/menu/back.tim iso/menu/ng.tim iso/menu/story.tim iso/menu/title.tim iso/menu/icon.tim
+iso/menu/backgrounds/week.arc: iso/menu/backgrounds/week0.tim iso/menu/backgrounds/week1.tim iso/menu/backgrounds/week2.tim iso/menu/backgrounds/week3.tim iso/menu/backgrounds/week4.tim
+
+# BF
+iso/bf/main.arc: iso/bf/bf0.tim iso/bf/bf1.tim iso/bf/bf2.tim iso/bf/bf3.tim iso/bf/bf4.tim iso/bf/bf5.tim iso/bf/bf6.tim iso/bf/dead0.tim
+iso/bf/dead.arc: iso/bf/dead1.tim iso/bf/dead2.tim iso/bf/retry.tim
+
+
+# Apple
+iso/apple/main.arc: iso/apple/apple0.tim iso/apple/apple1.tim iso/apple/apple2.tim iso/apple/apple3.tim iso/apple/apple4.tim iso/apple/apple5.tim iso/apple/real0.tim iso/apple/real1.tim iso/apple/real2.tim iso/apple/real3.tim iso/apple/real4.tim iso/apple/real5.tim iso/apple/real6.tim iso/apple/real7.tim iso/apple/real8.tim iso/apple/dead0.tim
+iso/apple/dead.arc: iso/apple/dead1.tim iso/apple/dead2.tim iso/apple/retry.tim
+
+# Dad
+iso/dad/main.arc: iso/dad/idle0.tim iso/dad/idle1.tim iso/dad/left.tim iso/dad/down.tim iso/dad/up.tim iso/dad/right.tim
+
+# Orange
+iso/orange/main.arc: iso/orange/orange0.tim iso/orange/orange1.tim iso/orange/orange2.tim iso/orange/orange3.tim iso/orange/orange4.tim iso/orange/orange5.tim iso/orange/scary0.tim iso/orange/scary1.tim iso/orange/scary2.tim iso/orange/scary3.tim iso/orange/scary4.tim iso/orange/scary5.tim iso/orange/scary6.tim iso/orange/scary7.tim iso/orange/scary8.tim iso/orange/scary9.tim iso/orange/scary10.tim iso/orange/scary11.tim iso/orange/scary12.tim
+
+# GF
+iso/gf/main.arc: iso/gf/gf0.tim iso/gf/gf1.tim iso/gf/gf2.tim
+iso/gf/tut.arc: iso/gf/tut0.tim iso/gf/tut1.tim
+
+# Week 1
+iso/week1/back.arc: iso/week1/back0.tim iso/week1/back1.tim
+
+# Kitchen
+iso/kitchen/back.arc: iso/kitchen/back0.tim iso/kitchen/back1.tim iso/kitchen/cut0.tim
+iso/kitchen/apple.arc: iso/kitchen/apple0.tim 
+iso/kitchen/fruit.arc: iso/kitchen/fruits0.tim iso/kitchen/fruits1.tim iso/kitchen/fruits2.tim iso/kitchen/fruits3.tim iso/kitchen/fruits4.tim 
+iso/kitchen/orange.arc: iso/kitchen/orange0.tim iso/kitchen/orange1.tim iso/kitchen/orange2.tim iso/kitchen/orange3.tim iso/kitchen/orange4.tim iso/kitchen/orange5.tim iso/kitchen/orange6.tim iso/kitchen/orange7.tim iso/kitchen/orange8.tim iso/kitchen/orange9.tim iso/kitchen/orange10.tim iso/kitchen/orange11.tim iso/kitchen/orange12.tim iso/kitchen/orange13.tim iso/kitchen/orange14.tim iso/kitchen/orange15.tim iso/kitchen/orange16.tim iso/kitchen/orange17.tim 
+iso/kitchen/plat.arc: iso/kitchen/plat0.tim iso/kitchen/plat1.tim iso/kitchen/plat2.tim 
+iso/kitchen/rapple.arc: iso/kitchen/rapple0.tim 
+iso/kitchen/speed.arc: iso/kitchen/speed0.tim iso/kitchen/speed1.tim iso/kitchen/speed2.tim 
+iso/kitchen/static.arc: iso/kitchen/static0.tim 
+iso/kitchen/hand.arc: iso/kitchen/hand0.tim 
+
+clean:
+	echo "Cleaning .arc and .tim files:"
+	find iso -type f \( -name "*.arc" -o -name "*.tim" \) -print -delete
