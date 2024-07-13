@@ -55,8 +55,9 @@ int main(int argc, char **argv) {
     Audio_Init();
     Gfx_Init();
     Pad_Init();
-    MCRD_Init();
     Str_Init();
+
+    MCRD_Init();
     
     Timer_Init();
 
@@ -92,21 +93,21 @@ int main(int argc, char **argv) {
                 Menu_Tick();
                 break;
             case GameLoop_Stage:
-                Stage_Tick();
-				Game_Update();
+                if (!movie_is_playing)
+                    Stage_Tick();
+                else
+                {
+				    Game_Update();
+                }
                 break;
             case GameLoop_Pause:
                 PausedState();
                 break;
         }
 
-        // Update video playback if a movie is playing
-        if (movie_is_playing) {
-            Str_Update();
-        }
-
         // Flip gfx buffers
         Gfx_Flip();
+        audio_skipped = false;
     }
 
     // Deinitialize system

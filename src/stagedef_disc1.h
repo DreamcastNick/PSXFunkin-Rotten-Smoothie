@@ -20,5 +20,4 @@
 		XA_RottenSmoothie, 0,
 		
 		StageId_1_1, 0,
-		false
 	},

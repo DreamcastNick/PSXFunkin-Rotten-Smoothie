@@ -34,7 +34,7 @@
 			</dir>
 			
 			<dir name = "str">
-				<file name = "grace.str" type = "data" source = "iso/movie/grace.str"/>
+				<file name = "grace.str" type = "str" source = "iso/movie/grace.str"/>
 			</dir>
 			
 			<!-- Stage assets -->
