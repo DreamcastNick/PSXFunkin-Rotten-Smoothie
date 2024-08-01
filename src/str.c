@@ -11,6 +11,13 @@
 #include "mem.h"
 #include "stage.h"
 
+// Declare the missing functions
+void DecDCTout(u32 *data, int size);
+int DecDCTinSync(int sync);
+void DecDCToutCallback(void (*handler)(void));
+void DecDCTin(u32 *data, int mode);
+void DecDCTReset(int reset);
+
 boolean movie_is_playing = false;
 boolean movie_needs_init;
 extern char error_msg[0x200]; // Adjust size as necessary
@@ -151,7 +158,6 @@ StreamBuffer *get_next_frame(void) {
 }
 
 static void STR_InitStream(void) {
-    Audio_StopXA();
     EnterCriticalSection();
     DecDCToutCallback(&mdec_dma_handler);
     CdReadyCallback(&cd_event_handler);
@@ -182,16 +188,15 @@ void Str_Update(void) {
         STR_StopStream();
         Mem_Free(str_ctx);
         Mem_Free(sector_header);
-
-        Audio_PlayXA_Track(stage.stage_def->music_track, 0x40, stage.stage_def->music_channel, 0);
-        Audio_SetPos(164);
-        Gfx_EnableClear();
         return;
     }
 
     // Start decoding the video frame
     VLC_Context vlc_ctx;
     DecDCTvlcStart(&vlc_ctx, frame->mdec_data, sizeof(frame->mdec_data) / 4, frame->bs_data);
+
+    // Flip the screen buffer without ordering tables (OT)
+    Gfx_FlipWithoutOT();
 
     // Decompress the MDEC data
     DecDCTin(frame->mdec_data, DECDCT_MODE_16BPP);
@@ -210,6 +215,9 @@ void Str_Update(void) {
 
     // Output the DCT data to VRAM
     DecDCTout(str_ctx->slices[str_ctx->cur_slice], BLOCK_SIZE * str_ctx->slice_pos.h / 2);
+
+    // Update XA audio playback
+    Audio_ProcessXA();
 }
 
 void Str_Init(void) {
@@ -218,34 +226,60 @@ void Str_Init(void) {
     movie_needs_init = true;
 }
 
-void Str_Play(const char *filedir)
-{
-    Gfx_DisableClear();
+void Str_Play(const char *filedir) {
+    (void)filedir; // Mark parameter as unused to avoid warnings
+
+    if (movie_is_playing) {
+        // Stop previous playback if a movie is already playing
+        STR_StopStream();
+        Mem_Free(str_ctx);
+        Mem_Free(sector_header);
+    }
+
     CdInit();
     str_ctx = Mem_Alloc(sizeof(StreamContext));
+    if (!str_ctx) {
+        sprintf(error_msg, "Failed to allocate memory for StreamContext");
+        ErrorLock();
+        return;
+    }
+
     sector_header = Mem_Alloc(sizeof(STR_Header));
+    if (!sector_header) {
+        sprintf(error_msg, "Failed to allocate memory for STR_Header");
+        Mem_Free(str_ctx);
+        ErrorLock();
+        return;
+    }
+
+    memset(str_ctx, 0, sizeof(StreamContext));
+    memset(sector_header, 0, sizeof(STR_Header));
     STR_InitStream();
 
-    str_ctx->frame_id       = -1;
-    str_ctx->dropped_frames =  0;
-    str_ctx->sector_pending =  0;
-    str_ctx->frame_ready    =  0;
+    str_ctx->frame_id = -1;
+    str_ctx->dropped_frames = 0;
+    str_ctx->sector_pending = 0;
+    str_ctx->frame_ready = 0;
 
     CdlFILE file;
 
-    IO_FindFile(&file, filedir);
     CdSync(0, 0);
 
     // Configure the CD drive to read at 2x speed and to play any XA-ADPCM
     // sectors that might be interleaved with the video data.
     u8 mode = CdlModeRT | CdlModeSpeed;
-    CdControl(CdlSetmode, (u8 *) &mode, 0);
+    CdControl(CdlSetmode, &mode, 0);
 
     // Start reading in real-time mode (i.e. without retrying in case of read
-    // errors) and wait for the first frame to be buffered.
-    CdControl(CdlReadS, (u8*)&file.pos, 0);
+    // errors) at 2x speed. This reduces read latency at the cost of making
+    // the streaming code more sensitive to disc scratches.
+    CdControlB(CdlReadN, (u8 *)filedir, 0);
 
-    get_next_frame();
+    // Process the first video frame immediately to minimize latency
+    while (str_ctx->frame_ready <= 0) {
+        __asm__ volatile("");
+    }
+    cd_sector_handler();
 }
 
 void Str_CanPlayBegin(void) {
@@ -266,5 +300,15 @@ void Str_CanPlayFinal(void) {
 
 // Function to update the game state
 void Game_Update(void) {
-    Str_Update();
+    // Update XA audio playback (assuming you have a function for this)
+    Audio_ProcessXA();
+
+    // Check if video playback needs to be updated
+    if (movie_is_playing) {
+        Str_Update();
+    }
+
+    if (stage.song_step >= 1312 && stage.song_step <= 1816) {
+        Str_Play("\\STR\\GRACE.STR;1");
+    }
 }

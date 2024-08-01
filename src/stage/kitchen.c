@@ -568,7 +568,7 @@ void Back_Kitchen_DrawHUD(StageBack *back)
 		}
 	}
 	Animatable_Animate(&this->appleshock_animatable, (void*)this, Kitchen_Apple_SetFrame);
-	//Kitchen_Apple_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
+	Kitchen_Apple_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
 	
 	fx = stage.camera.x;
 	fy = stage.camera.y;
@@ -583,7 +583,7 @@ void Back_Kitchen_DrawHUD(StageBack *back)
 		}
 	}
 	Animatable_Animate(&this->fruitnormal_animatable, (void*)this, Kitchen_Fruit_SetFrame);
-	//Kitchen_Fruit_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
+	Kitchen_Fruit_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
 	
 	fx = stage.camera.x;
 	fy = stage.camera.y;
@@ -598,7 +598,7 @@ void Back_Kitchen_DrawHUD(StageBack *back)
 		}
 	}
 	Animatable_Animate(&this->orangewatching_animatable, (void*)this, Kitchen_Orange_SetFrame);
-	//Kitchen_Orange_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
+	Kitchen_Orange_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
 	
 	fx = stage.camera.x;
 	fy = stage.camera.y;
@@ -613,7 +613,7 @@ void Back_Kitchen_DrawHUD(StageBack *back)
 		}
 	}
 	Animatable_Animate(&this->plat_animatable, (void*)this, Kitchen_Plat_SetFrame);
-	//Kitchen_Plat_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
+	Kitchen_Plat_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
 	
 	fx = stage.camera.x;
 	fy = stage.camera.y;
@@ -628,7 +628,7 @@ void Back_Kitchen_DrawHUD(StageBack *back)
 		}
 	}
 	Animatable_Animate(&this->rappleidle_animatable, (void*)this, Kitchen_Rapple_SetFrame);
-	//Kitchen_Rapple_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
+	Kitchen_Rapple_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
 	
 	fx = stage.camera.x;
 	fy = stage.camera.y;
@@ -643,7 +643,7 @@ void Back_Kitchen_DrawHUD(StageBack *back)
 		}
 	}
 	Animatable_Animate(&this->speedfall_animatable, (void*)this, Kitchen_Speed_SetFrame);
-	//Kitchen_Speed_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
+	Kitchen_Speed_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
 	
 	fx = stage.camera.x;
 	fy = stage.camera.y;
@@ -658,7 +658,7 @@ void Back_Kitchen_DrawHUD(StageBack *back)
 		}
 	}
 	Animatable_Animate(&this->static_animatable, (void*)this, Kitchen_Static_SetFrame);
-	//Kitchen_Static_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
+	Kitchen_Static_Draw(this, FIXED_DEC(-20, 1) - fx, FIXED_DEC(5, 1) - fy);
 }
 
 

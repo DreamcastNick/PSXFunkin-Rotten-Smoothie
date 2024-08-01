@@ -36,7 +36,6 @@ void Audio_Quit(void);
 void Audio_Reset(void);
 void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop);
 void Audio_SeekXA_Track(XA_Track track);
-void Audio_SetPos(s32 time);
 void Audio_PauseXA(void);
 void Audio_ResumeXA(void);
 void Audio_StopXA(void);
@@ -53,7 +52,5 @@ void Audio_PlaySoundOnChannel(u32 addr, u32 channel, int volume);
 void Audio_PlaySound(u32 addr, int volume);
 u32 VAG_IsPlaying(u32 channel);
 void Audio_ClearAlloc(void);
-
-extern boolean audio_skipped;
 
 #endif

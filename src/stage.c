@@ -476,12 +476,9 @@ static void Stage_MissNote(PlayerState *this)
 
 static void Stage_NoteCheck(PlayerState *this, u8 type)
 {
-	if (audio_skipped)
-			return;
-
 	//Perform note check
 	for (Note *note = stage.cur_note;; note++)
-	{	
+	{
 		if (!(note->type & (NOTE_FLAG_MINE | NOTE_FLAG_DANGER | NOTE_FLAG_STATIC | NOTE_FLAG_PHANTOM | NOTE_FLAG_POLICE | NOTE_FLAG_MAGIC)))
 		{
 			//Check if note can be hit
@@ -670,9 +667,6 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 
 static void Stage_SustainCheck(PlayerState *this, u8 type)
 {
-	if (audio_skipped)
-			return;
-
 	//Perform note check
 	for (Note *note = stage.cur_note;; note++)
 	{
@@ -1250,14 +1244,14 @@ static void Stage_DrawNotes(void)
 			
 			//Miss note if player's note
 			
-			if  ((note->type == NOTE_FLAG_DANGER) && !bot && !audio_skipped)
+			if  ((note->type == NOTE_FLAG_DANGER) && !bot)
 			{
 			   this->health -= 2000;
 			   Stage_CutVocal();
 			   Stage_MissNote(this);
 			}
 			
-			if ((note->type == NOTE_FLAG_STATIC) && !bot && !audio_skipped)
+			if ((note->type == NOTE_FLAG_STATIC) && !bot)
 			{
 				Audio_PlaySound(Sounds[4], 0x3fff);
 				this->health -= 2000;
@@ -1266,7 +1260,7 @@ static void Stage_DrawNotes(void)
 				Stage_MissNote(this);
 			}
 			
-			if (!(note->type & (bot | NOTE_FLAG_HIT | NOTE_FLAG_MINE | NOTE_FLAG_PHANTOM | NOTE_FLAG_POLICE | NOTE_FLAG_MAGIC)) && !bot && !audio_skipped)
+			if (!(note->type & (bot | NOTE_FLAG_HIT | NOTE_FLAG_MINE | NOTE_FLAG_PHANTOM | NOTE_FLAG_POLICE | NOTE_FLAG_MAGIC)) && !bot)
 			{
 				if (stage.prefs.mode < StageMode_Net1 || i == ((stage.prefs.mode == StageMode_Net1) ? 0 : 1))
 				{
@@ -2159,7 +2153,7 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stage.stage_def = &stage_defs[stage.stage_id = id];
 	stage.stage_diff = difficulty;
 	stage.story = story;
-
+	
 	//Load HUD textures
 	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
 	Gfx_LoadTex(&stage.tex_hud1, IO_Read("\\STAGE\\HUD1.TIM;1"), GFX_LOADTEX_FREE);
@@ -2519,7 +2513,7 @@ void Stage_Tick(void)
 			if (stage.prefs.debug)
 				Debug_Tick();
 			
-			FntPrint("step %d, beat %d, song_time %d\n", stage.song_step, stage.song_beat, Audio_TellXA_Milli());
+			//FntPrint("step %d, beat %d", stage.song_step, stage.song_beat);
 
 			if (noteshake) 
 			{
@@ -2888,12 +2882,14 @@ void Stage_Tick(void)
 			
 			if (!stage.prefs.debug)
 			{
+				//Perform health checks
 				if (stage.player_state[0].health <= 0)
 				{
+					//Player has died
 					stage.player_state[0].health = 0;
+						
 					stage.state = StageState_Dead;
 				}
-
 				if (stage.player_state[0].health > 20000)
 					stage.player_state[0].health = 20000;
 
@@ -2940,12 +2936,6 @@ void Stage_Tick(void)
 			}
 			
 			Events_Back();
-
-				if (stage.song_step == 1304 && stage.flag & STAGE_FLAG_JUST_STEP) 
-				{
-					printf("Heyyy\n");
-	        Str_Play("\\STR\\GRACE.STR;1");
-	    	}
 			
 			//Draw stage foreground
 			if (stage.back->draw_fg != NULL)

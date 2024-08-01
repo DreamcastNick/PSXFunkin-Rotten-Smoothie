@@ -11,8 +11,6 @@
 #include "stage.h"
 
 //XA state
-boolean audio_skipped = false;
-
 #define XA_STATE_INIT    (1 << 0)
 #define XA_STATE_PLAYING (1 << 1)
 #define XA_STATE_LOOPS   (1 << 2)
@@ -219,12 +217,6 @@ void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop)
 
 	//Play track
 	Audio_PlayXA_File(&file, volume, channel, loop);
-}
-
-void Audio_SetPos(s32 time)
-{
-	audio_skipped = true;
-	xa_pos = xa_start + (time * 75);
 }
 
 void Audio_SeekXA_Track(XA_Track track)
