@@ -9,7 +9,7 @@
 
 #include "psx.h"
 
-void Str_Update(void);
+boolean Str_Update(void);
 void Str_Init(void);
 void Str_Play(const char *filedir);
 void Str_CanPlayBegin(void);
@@ -17,4 +17,5 @@ void Str_CanPlayFinal(void);
 void Game_Update(void); // Declaration of Game_Update function
 
 extern boolean movie_is_playing;
+extern boolean movie_finished;
 #endif

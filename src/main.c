@@ -55,8 +55,9 @@ int main(int argc, char **argv) {
     Audio_Init();
     Gfx_Init();
     Pad_Init();
-    MCRD_Init();
     Str_Init();
+
+    MCRD_Init();
     
     Timer_Init();
 
@@ -77,14 +78,17 @@ int main(int argc, char **argv) {
         Audio_ProcessXA();
         Pad_Update();
 
-		#ifdef MEM_STAT
-			// Memory stats
-			size_t mem_used, mem_size, mem_max;
-			Mem_GetStat(&mem_used, &mem_size, &mem_max);
-			#ifndef MEM_BAR
-				FntPrint("mem: %08X/%08X (max %08X)\n", mem_used, mem_size, mem_max);
-			#endif
-		#endif
+        // Update the Str stream asynchronously
+        Str_Update();
+
+        #ifdef MEM_STAT
+            // Memory stats
+            size_t mem_used, mem_size, mem_max;
+            Mem_GetStat(&mem_used, &mem_size, &mem_max);
+            #ifndef MEM_BAR
+                FntPrint("mem: %08X/%08X (max %08X)\n", mem_used, mem_size, mem_max);
+            #endif
+        #endif
 
         // Tick and draw game
         switch (gameloop) {
@@ -92,21 +96,26 @@ int main(int argc, char **argv) {
                 Menu_Tick();
                 break;
             case GameLoop_Stage:
-                Stage_Tick();
-				Game_Update();
+                if (!movie_is_playing) {
+                    Stage_Tick();
+                    if (movie_finished) {
+                        // Load the next level or transition as needed
+                        // Reset movie_finished for the next movie
+                        movie_finished = false;
+                    }
+                } else {
+                    // If the movie is playing, we can still call Stage_Tick
+                    Stage_Tick();
+                }
                 break;
             case GameLoop_Pause:
                 PausedState();
                 break;
         }
 
-        // Update video playback if a movie is playing
-        if (movie_is_playing) {
-            Str_Update();
-        }
-
         // Flip gfx buffers
         Gfx_Flip();
+        audio_skipped = false;
     }
 
     // Deinitialize system

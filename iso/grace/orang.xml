@@ -230,19 +230,4 @@
 <SubTexture name="idle0227" x="960" y="128" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
 <SubTexture name="idle0228" x="960" y="192" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
 <SubTexture name="idle0229" x="960" y="256" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0230" x="960" y="320" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0231" x="960" y="384" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0232" x="960" y="448" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0233" x="960" y="512" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0234" x="960" y="576" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0235" x="960" y="640" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0236" x="960" y="704" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0237" x="960" y="768" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0238" x="960" y="832" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0239" x="960" y="896" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0240" x="0" y="960" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0241" x="64" y="960" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0242" x="128" y="960" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0243" x="192" y="960" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
-<SubTexture name="idle0244" x="256" y="960" width="64" height="64" frameX="0" frameY="0" frameWidth="64" frameHeight="64" />
 </TextureAtlas>

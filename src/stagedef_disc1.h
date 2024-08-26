@@ -1,8 +1,8 @@
 	{ //StageId_1_1 (Rotten Smoothie)
 		//Characters
-		{Char_BF_New,    FIXED_DEC(60,1),  FIXED_DEC(100,1)},
+		{Char_Apple_New,    FIXED_DEC(254,1),  FIXED_DEC(26,1)},
 		{NULL},
-		{Char_Dad_New, FIXED_DEC(-120,1),  FIXED_DEC(100,1)},
+		{Char_Orange_New, FIXED_DEC(16,1),  FIXED_DEC(16,1)},
 		{NULL},
 		{NULL},
 		
@@ -20,5 +20,4 @@
 		XA_RottenSmoothie, 0,
 		
 		StageId_1_1, 0,
-		false
 	},

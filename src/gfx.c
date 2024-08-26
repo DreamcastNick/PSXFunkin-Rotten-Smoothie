@@ -74,7 +74,7 @@ void Gfx_Flip(void)
 
 void Gfx_FlipWithoutOT(void)
 {
-		VSync(0);
+	VSync(0);
     DecDCTinSync(0);
     DecDCToutSync(0);
 

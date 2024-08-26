@@ -36,14 +36,10 @@ all: \
 	iso/gf/speaker.tim \
 	iso/week1/back.arc \
 	iso/kitchen/back.arc \
-	iso/kitchen/apple.arc \
-	iso/kitchen/fruit.arc \
-	iso/kitchen/orange.arc \
-	iso/kitchen/plat.arc \
-	iso/kitchen/rapple.arc \
-	iso/kitchen/speed.arc \
-	iso/kitchen/static.arc \
-	iso/kitchen/hand.arc \
+	iso/kitchen/grace.arc \
+	iso/kitchen/handa.arc \
+	iso/kitchen/handb.arc \
+	iso/kitchen/handc.arc \
 
 iso/%.tim: iso/%.png
 	tools/funkintimconv/funkintimconv $@ $<
@@ -79,14 +75,10 @@ iso/week1/back.arc: iso/week1/back0.tim iso/week1/back1.tim
 
 # Kitchen
 iso/kitchen/back.arc: iso/kitchen/back0.tim iso/kitchen/back1.tim iso/kitchen/cut0.tim
-iso/kitchen/apple.arc: iso/kitchen/apple0.tim 
-iso/kitchen/fruit.arc: iso/kitchen/fruits0.tim iso/kitchen/fruits1.tim iso/kitchen/fruits2.tim iso/kitchen/fruits3.tim iso/kitchen/fruits4.tim 
-iso/kitchen/orange.arc: iso/kitchen/orange0.tim iso/kitchen/orange1.tim iso/kitchen/orange2.tim iso/kitchen/orange3.tim iso/kitchen/orange4.tim iso/kitchen/orange5.tim iso/kitchen/orange6.tim iso/kitchen/orange7.tim iso/kitchen/orange8.tim iso/kitchen/orange9.tim iso/kitchen/orange10.tim iso/kitchen/orange11.tim iso/kitchen/orange12.tim iso/kitchen/orange13.tim iso/kitchen/orange14.tim iso/kitchen/orange15.tim iso/kitchen/orange16.tim iso/kitchen/orange17.tim 
-iso/kitchen/plat.arc: iso/kitchen/plat0.tim iso/kitchen/plat1.tim iso/kitchen/plat2.tim 
-iso/kitchen/rapple.arc: iso/kitchen/rapple0.tim 
-iso/kitchen/speed.arc: iso/kitchen/speed0.tim iso/kitchen/speed1.tim iso/kitchen/speed2.tim 
-iso/kitchen/static.arc: iso/kitchen/static0.tim 
-iso/kitchen/hand.arc: iso/kitchen/hand0.tim 
+iso/kitchen/grace.arc: iso/kitchen/grace0.tim iso/kitchen/grace1.tim iso/kitchen/grace2.tim iso/kitchen/grace3.tim iso/kitchen/grace4.tim iso/kitchen/grace5.tim iso/kitchen/grace6.tim iso/kitchen/grace7.tim iso/kitchen/grace8.tim iso/kitchen/grace9.tim iso/kitchen/grace10.tim iso/kitchen/grace11.tim iso/kitchen/grace12.tim iso/kitchen/grace13.tim iso/kitchen/grace14.tim 
+iso/kitchen/handa.arc: iso/kitchen/handa.tim 
+iso/kitchen/handb.arc: iso/kitchen/handb.tim
+iso/kitchen/handc.arc: iso/kitchen/handc.tim
 
 clean:
 	echo "Cleaning .arc and .tim files:"

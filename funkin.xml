@@ -33,10 +33,6 @@
 				<file name = "fonts.tim" type = "data" source = "iso/font/fonts.tim"/>
 			</dir>
 			
-			<dir name = "str">
-				<file name = "grace.str" type = "str" source = "iso/movie/grace.str"/>
-			</dir>
-			
 			<!-- Stage assets -->
 			<dir name = "stage">
 				<file name = "note4k.tim" type = "data" source = "iso/stage/note4k.tim"/>
@@ -62,14 +58,10 @@
 			<dir name = "kitchen">
 				<!-- Background art -->
 				<file name = "back.arc" type = "data" source = "iso/kitchen/back.arc"/>
-				<file name = "apple.arc" type = "data" source = "iso/kitchen/apple.arc"/>
-				<file name = "fruit.arc" type = "data" source = "iso/kitchen/fruit.arc"/>
-				<file name = "hand.arc" type = "data" source = "iso/kitchen/hand.arc"/>
-				<file name = "orange.arc" type = "data" source = "iso/kitchen/orange.arc"/>
-				<file name = "plat.arc" type = "data" source = "iso/kitchen/plat.arc"/>
-				<file name = "rapple.arc" type = "data" source = "iso/kitchen/rapple.arc"/>
-				<file name = "speed.arc" type = "data" source = "iso/kitchen/speed.arc"/>
-				<file name = "static.arc" type = "data" source = "iso/kitchen/static.arc"/>
+				<file name = "grace.arc" type = "data" source = "iso/kitchen/grace.arc"/>
+				<file name = "handa.arc" type = "data" source = "iso/kitchen/handa.arc"/>
+				<file name = "handb.arc" type = "data" source = "iso/kitchen/handb.arc"/>
+				<file name = "handc.arc" type = "data" source = "iso/kitchen/handc.arc"/>
 			</dir>
 
 			<dir name = "chart">
@@ -85,8 +77,15 @@
 				<file name = "bf.arc" type = "data" source = "iso/bf/main.arc"/>
 				<file name = "bfdead.arc" type = "data" source = "iso/bf/dead.arc"/>
 				
+				<!-- Apple assets -->
+				<file name = "apple.arc" type = "data" source = "iso/apple/main.arc"/>
+				<file name = "appded.arc" type = "data" source = "iso/apple/dead.arc"/>
+				
 				<!-- Dad assets -->
 				<file name = "dad.arc" type = "data" source = "iso/dad/main.arc"/>
+				
+				<!-- Orange assets -->
+				<file name = "orange.arc" type = "data" source = "iso/orange/main.arc"/>
 
 				<!-- Girlfriend assets -->
 				<file name = "gf.arc" type = "data" source = "iso/gf/main.arc"/>

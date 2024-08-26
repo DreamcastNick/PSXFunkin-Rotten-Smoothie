@@ -29,8 +29,10 @@ SRCS = src/main.c \
 	   src/stage/kitchen.c \
        src/animation.c \
        src/character.c \
+	   src/character/apple.c \
        src/character/bf.c \
        src/character/speaker.c \
+	   src/character/orange.c \
        src/character/dad.c \
        src/character/spook.c \
        src/character/pico.c \
@@ -61,7 +63,7 @@ LDFLAGS += -lds
 LDFLAGS += -letc
 LDFLAGS += -lgpu
 #LDFLAGS += -lgs
-LDFLAGS += -lgte
+#LDFLAGS += -lgte
 #LDFLAGS += -lgun
 #LDFLAGS += -lhmd
 #LDFLAGS += -lmath
