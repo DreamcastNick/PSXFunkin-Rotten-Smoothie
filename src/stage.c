@@ -1315,35 +1315,32 @@ static void Stage_DrawNotes(void)
 				continue;
 			
 			//Miss note if player's note
-			if (stage.movie_is_playing)
+			if (!stage.movie_is_playing)
 			{
-				if (stage.song_step <= 1312 || stage.song_step >= 1824) // Prevent health decrease between song_step 1312 and 1824
+				if ((note->type == NOTE_FLAG_DANGER) && !bot)
 				{
-					if ((note->type == NOTE_FLAG_DANGER) && !bot)
+					this->health -= 2000;
+					Stage_CutVocal();
+					Stage_MissNote(this);
+				}
+
+				if ((note->type == NOTE_FLAG_STATIC) && !bot)
+				{
+					Audio_PlaySound(Sounds[4], 0x3fff);
+					this->health -= 2000;
+					stage.hitstatic = 10;
+					Stage_CutVocal();
+					Stage_MissNote(this);
+				}
+
+				if (!(note->type & (bot | NOTE_FLAG_HIT | NOTE_FLAG_MINE | NOTE_FLAG_PHANTOM | NOTE_FLAG_POLICE | NOTE_FLAG_MAGIC)) && !bot)
+				{
+					if (stage.prefs.mode < StageMode_Net1 || i == ((stage.prefs.mode == StageMode_Net1) ? 0 : 1))
 					{
-						this->health -= 2000;
+						// Missed note
 						Stage_CutVocal();
 						Stage_MissNote(this);
-					}
-
-					if ((note->type == NOTE_FLAG_STATIC) && !bot)
-					{
-						Audio_PlaySound(Sounds[4], 0x3fff);
-						this->health -= 2000;
-						stage.hitstatic = 10;
-						Stage_CutVocal();
-						Stage_MissNote(this);
-					}
-
-					if (!(note->type & (bot | NOTE_FLAG_HIT | NOTE_FLAG_MINE | NOTE_FLAG_PHANTOM | NOTE_FLAG_POLICE | NOTE_FLAG_MAGIC)) && !bot)
-					{
-						if (stage.prefs.mode < StageMode_Net1 || i == ((stage.prefs.mode == StageMode_Net1) ? 0 : 1))
-						{
-							// Missed note
-							Stage_CutVocal();
-							Stage_MissNote(this);
-							this->health -= 475;
-						}
+						this->health -= 475;
 					}
 				}
 			}
@@ -3064,20 +3061,17 @@ void Stage_Tick(void)
 				PlayerState *this = &stage.player_state[i];
 			}
 			
-			if (stage.movie_is_playing == true || stage.prefs.mode < StageMode_2P)
+			if (stage.prefs.mode < StageMode_2P)
 			{
-				if (stage.song_step <= 1312 || stage.song_step >= 1824) // Prevent health decrease between song_step 1312 and 1824
+				if (stage.player_state[0].health <= 0)
 				{
-					if (stage.player_state[0].health <= 0)
-					{
-						stage.player_state[0].health = 0;
-						stage.state = StageState_Dead;
-					}
+					stage.player_state[0].health = 0;
+					stage.state = StageState_Dead;
+				}
 
-					if (stage.player_state[0].health > 20000)
-					{
-						stage.player_state[0].health = 20000;
-					}
+				if (stage.player_state[0].health > 20000)
+				{
+					stage.player_state[0].health = 20000;
 				}
 
 				//Draw health heads
