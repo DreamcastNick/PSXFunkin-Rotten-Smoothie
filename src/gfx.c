@@ -1,7 +1,13 @@
+/*
+	This Source Code Form is subject to the terms of the Mozilla Public
+	License, v. 2.0. If a copy of the MPL was not distributed with this
+	file, You can obtain one at http://mozilla.org/MPL/2.0/.
+*/
+
 #include "gfx.h"
 
-#include "main.h"
 #include "mem.h"
+#include "main.h"
 #include "mutil.h"
 
 //Gfx constants
@@ -22,18 +28,39 @@ void Gfx_Init(void)
 	//Reset GPU
 	ResetGraph(0);
 	
+	//Clear screen
+	RECT dst = {0, 0, 320, 480};
+	ClearImage(&dst, 0, 0, 0);
+	
 	//Initialize display environment
 	SetDefDispEnv(&disp[0], 0, 0, 320, 240);
 	SetDefDispEnv(&disp[1], 0, 240, 320, 240);
+	
 	//Initialize draw environment
 	SetDefDrawEnv(&draw[0], 0, 240, 320, 240);
 	SetDefDrawEnv(&draw[1], 0, 0, 320, 240);
 	
+	//Set video mode depending on BIOS region
+	switch(*(char*)0xbfc7ff52)
+	{
+		case 'E':
+			SetVideoMode(MODE_PAL);
+			SsSetTickMode(SS_TICK50);
+			disp[0].screen.y = disp[1].screen.y = 24;
+			break;
+		default:
+			SetVideoMode(MODE_NTSC);
+			SsSetTickMode(SS_TICK60);
+			break;
+	}
+	
 	//Set draw background
 	draw[0].isbg = draw[1].isbg = 1;
+	draw[0].dtd = draw[1].dtd = false;
 	setRGB0(&draw[0], 0, 0, 0);
 	setRGB0(&draw[1], 0, 0, 0);
-
+	
+	//Load font
 	FntLoad(960, 0);
 	FntOpen(0, 8, 320, 224, 0, 100);
 	
@@ -54,6 +81,8 @@ void Gfx_Flip(void)
 	//Sync
 	DrawSync(0);
 	VSync(0);
+	DecDCTinSync(0);
+	DecDCToutSync(0);
 	
 	//Apply environments
 	PutDispEnv(&disp[db]);
@@ -75,16 +104,19 @@ void Gfx_Flip(void)
 void Gfx_FlipWithoutOT(void)
 {
 	VSync(0);
-    DecDCTinSync(0);
-    DecDCToutSync(0);
+  DecDCTinSync(0);
+  DecDCToutSync(0);
 
-    FntFlush(-1);
-    db ^= 1;
+  DrawOTag(ot[db] + OTLEN - 1);
+  FntFlush(-1);
+  db ^= 1;
 
-    DrawSync(0);
-    PutDrawEnv(&draw[db]);
-    PutDispEnv(&disp[db]);
-    //Enable display
+  nextpri = pribuff[db];
+	ClearOTagR(ot[db], OTLEN);
+
+  PutDrawEnv(&draw[db]);
+  PutDispEnv(&disp[db]);
+  //Enable display
 	SetDispMask(1);
 }
 
@@ -413,33 +445,12 @@ void Gfx_DrawTexRotate(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 angle,
 }
 
 void Gfx_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT *dst, u8 r, u8 g, u8 b)
-{
-	//Manipulate rects to comply with GPU restrictions
-	RECT csrc, cdst;
-	csrc = *src;
-	cdst = *dst;
-	
-	if (dst->w < 0)
-		csrc.x--;
-	if (dst->h < 0)
-		csrc.y--;
-	
-	if ((csrc.x + csrc.w) >= 0x100)
-	{
-		csrc.w = 0xFF - csrc.x;
-		cdst.w = cdst.w * csrc.w / src->w;
-	}
-	if ((csrc.y + csrc.h) >= 0x100)
-	{
-		csrc.h = 0xFF - csrc.y;
-		cdst.h = cdst.h * csrc.h / src->h;
-	}
-	
+{	
 	//Add quad
 	POLY_FT4 *quad = (POLY_FT4*)nextpri;
 	setPolyFT4(quad);
-	setUVWH(quad, src->x, csrc.y, csrc.w, csrc.h);
-	setXYWH(quad, cdst.x, cdst.y, cdst.w, cdst.h);
+	setUVWH(quad, src->x, src->y, src->w, src->h);
+	setXYWH(quad, dst->x, dst->y, dst->w, dst->h);
 	setRGB0(quad, r, g, b);
 	quad->tpage = tex->tpage;
 	quad->clut = tex->clut;

@@ -30,14 +30,14 @@ void ErrorLock(void) {
 }
 
 // Memory heap
-#define MEM_STAT // This will enable the Mem_GetStat function which returns information about available memory in the heap
+//#define MEM_STAT // This will enable the Mem_GetStat function which returns information about available memory in the heap
 
 #define MEM_IMPLEMENTATION
 #include "mem.h"
 #undef MEM_IMPLEMENTATION
 
 #ifndef PSXF_STDMEM
-static u8 malloc_heap[0x1B0000];  // 8MB heap size (8 * 1024 * 1024 bytes)
+static u8 malloc_heap[0x1A0000];  // 8MB heap size (8 * 1024 * 1024 bytes)
 #endif
 
 // Entry point
@@ -72,51 +72,38 @@ int main(int argc, char **argv) {
     Menu_Load(MenuPage_Opening);
     
     // Game loop
-    while (PSX_Running()) {
-        // Prepare frame
-        Timer_Tick();
-        Audio_ProcessXA();
-        Pad_Update();
-
-        // Update the Str stream asynchronously
-        Str_Update();
-
-        #ifdef MEM_STAT
-            // Memory stats
-            size_t mem_used, mem_size, mem_max;
-            Mem_GetStat(&mem_used, &mem_size, &mem_max);
-            #ifndef MEM_BAR
-                FntPrint("mem: %08X/%08X (max %08X)\n", mem_used, mem_size, mem_max);
-            #endif
-        #endif
-
-        // Tick and draw game
-        switch (gameloop) {
-            case GameLoop_Menu:
-                Menu_Tick();
-                break;
-            case GameLoop_Stage:
-                if (!movie_is_playing) {
-                    Stage_Tick();
-                    if (movie_finished) {
-                        // Load the next level or transition as needed
-                        // Reset movie_finished for the next movie
-                        movie_finished = false;
-                    }
-                } else {
-                    // If the movie is playing, we can still call Stage_Tick
-                    Stage_Tick();
-                }
-                break;
-            case GameLoop_Pause:
+    while (true)
+	{		
+		Timer_Tick();
+		Audio_ProcessXA();
+		Pad_Update();
+		
+		#ifdef MEM_STAT
+			//Memory stats
+			size_t mem_used, mem_size, mem_max;
+			Mem_GetStat(&mem_used, &mem_size, &mem_max);
+			#ifndef MEM_BAR
+				FntPrint("mem: %08X/%08X (max %08X)\n", mem_used, mem_size, mem_max);
+			#endif
+		#endif
+		
+		//Tick and draw game
+		switch (gameloop)
+		{
+			case GameLoop_Menu:
+				Menu_Tick();
+				break;
+			case GameLoop_Stage:
+				Stage_Tick();
+				break;
+			case GameLoop_Pause:
                 PausedState();
                 break;
-        }
-
-        // Flip gfx buffers
-        Gfx_Flip();
-        audio_skipped = false;
-    }
+		}
+		
+		//Flip gfx buffers
+		Gfx_Flip();
+	}
 
     // Deinitialize system
     Pad_Quit();

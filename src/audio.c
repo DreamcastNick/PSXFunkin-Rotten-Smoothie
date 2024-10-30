@@ -11,14 +11,15 @@
 #include "stage.h"
 
 //XA state
-boolean audio_skipped = false;
 
 #define XA_STATE_INIT    (1 << 0)
 #define XA_STATE_PLAYING (1 << 1)
 #define XA_STATE_LOOPS   (1 << 2)
 #define XA_STATE_SEEKING (1 << 3)
+static CdlFILE xa_file;
 static u8 xa_state, xa_resync, xa_volume, xa_channel;
 static u32 xa_pos, xa_start, xa_end;
+static s16 xa_offset;
 
 //audio stuff
 #define BUFFER_SIZE (13 << 11) //13 sectors
@@ -191,11 +192,10 @@ static void Audio_GetXAFile(CdlFILE *file, XA_Track track)
 	file->size = track_def->length;
 }
 
-static void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop)
+static void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop, s16 start_position_seconds)
 {
 	//Initialize XA system and stop previous song
 	XA_Init();
-	XA_SetVolume(0);
 	
 	//Set XA state
 	xa_start = xa_pos = CdPosToInt(&file->pos);
@@ -204,35 +204,40 @@ static void Audio_PlayXA_File(CdlFILE *file, u8 volume, u8 channel, boolean loop
 	xa_resync = 0;
 	if (loop)
 		xa_state |= XA_STATE_LOOPS;
+
+	if (start_position_seconds > 0)
+	{
+		xa_pos += start_position_seconds * 75;
+	}
 	
 	//Start seeking to XA and use parameters
-	IO_SeekFile(file);
 	XA_SetFilter(channel);
 	XA_SetVolume(volume);
+	IO_SeekFile(&xa_file);
+
+	//Shitty emulator average user smh
+	xa_offset = XA_TellSector() - xa_start;
 }
 
-void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop)
+void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop, s32 start_position_seconds)
 {
 	//Get track information
-	CdlFILE file;
-	Audio_GetXAFile(&file, track);
-
+	Audio_GetXAFile(&xa_file, track);
+	
 	//Play track
-	Audio_PlayXA_File(&file, volume, channel, loop);
+	Audio_PlayXA_File(&xa_file, volume, channel, loop, start_position_seconds);
 }
 
 void Audio_SetPos(s32 time)
 {
-	audio_skipped = true;
 	xa_pos = xa_start + (time * 75);
 }
 
-void Audio_SeekXA_Track(XA_Track track)
+void Audio_SeekXA_Track(XA_Track track, s16 start_position_seconds)
 {
 	//Get track file and seek
-	CdlFILE file;
-	Audio_GetXAFile(&file, track);
-	IO_SeekFile(&file);
+	Audio_GetXAFile(&xa_file, track);
+	IO_SeekFile(&xa_file);
 }
 
 void Audio_PauseXA(void)
@@ -276,6 +281,11 @@ s32 Audio_TellXA_Milli(void)
 boolean Audio_PlayingXA(void)
 {
 	return (xa_state & XA_STATE_PLAYING) != 0;
+}
+
+void Audio_StartAt(u16 music_start_position_seconds)
+{
+	xa_pos += (music_start_position_seconds * 75);
 }
 
 void Audio_WaitPlayXA(void)

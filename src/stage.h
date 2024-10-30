@@ -17,6 +17,7 @@
 #include "object.h"
 #include "font.h"
 #include "debug.h"
+#include "audio.h"
 
 //Stage constants
 #define INPUT_LEFT  (PAD_LEFT  | PAD_SQUARE | PAD_L2)
@@ -125,7 +126,8 @@ typedef struct
 	fixed_t speed[3];
 	
 	u8 week, week_song;
-	u8 music_track, music_channel;
+	XA_Track track;
+	u8 channel;
 	
 	StageId next_stage;
 	u8 next_load;
@@ -227,6 +229,16 @@ typedef struct
 	fixed_t speed;
 	fixed_t step_crochet, step_time;
 	fixed_t early_safe, late_safe, early_sus_safe, late_sus_safe;
+	fixed_t flash, flashspd;
+	
+	boolean movie_is_playing;
+
+	fixed_t movie_pos;
+	fixed_t audio_last_pos_before_movie;
+	fixed_t audio_start_pos;
+
+	//STR Lbas
+	CdlFILE str_grace_lba;
 
 	//if stage have intro or no
 	boolean intro;

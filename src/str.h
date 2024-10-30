@@ -8,14 +8,12 @@
 #define PSXF_GUARD_STRPLAY_H
 
 #include "psx.h"
+#include <libpress.h>
 
-boolean Str_Update(void);
 void Str_Init(void);
+void Str_PlayFile(CdlFILE* file);
 void Str_Play(const char *filedir);
-void Str_CanPlayBegin(void);
-void Str_CanPlayFinal(void);
-void Game_Update(void); // Declaration of Game_Update function
+void Str_CanPlayDef(void);
 
 extern boolean movie_is_playing;
-extern boolean movie_finished;
 #endif

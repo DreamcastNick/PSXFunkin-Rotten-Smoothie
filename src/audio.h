@@ -34,8 +34,8 @@ u32 Audio_GetLength(XA_Track lengthtrack);
 void Audio_Init(void);
 void Audio_Quit(void);
 void Audio_Reset(void);
-void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop);
-void Audio_SeekXA_Track(XA_Track track);
+void Audio_PlayXA_Track(XA_Track track, u8 volume, u8 channel, boolean loop, s32 start_position_seconds);
+void Audio_SeekXA_Track(XA_Track track, s16 start_position_seconds);
 void Audio_SetPos(s32 time);
 void Audio_PauseXA(void);
 void Audio_ResumeXA(void);
@@ -47,13 +47,12 @@ boolean Audio_PlayingXA(void);
 void Audio_WaitPlayXA(void);
 void Audio_ProcessXA(void);
 void findFreeChannel(void);
+void Audio_StartAt(u16 music_start_position_seconds);
 u32 Audio_LoadVAGData(u32 *sound, u32 sound_size);
 void AudioPlayVAG(int channel, u32 addr);
 void Audio_PlaySoundOnChannel(u32 addr, u32 channel, int volume);
 void Audio_PlaySound(u32 addr, int volume);
 u32 VAG_IsPlaying(u32 channel);
 void Audio_ClearAlloc(void);
-
-extern boolean audio_skipped;
 
 #endif

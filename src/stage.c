@@ -29,6 +29,8 @@
 //Stage constants
 //#define STAGE_NOHUD //Disable the HUD
 
+int hudEnabled = 1;
+
 //4K
 int note_x4k[8] = {
 	//BF
@@ -264,7 +266,7 @@ static void Stage_StartVocal(void)
 {
 	if (!(stage.flag & STAGE_FLAG_VOCAL_ACTIVE))
 	{
-		Audio_ChannelXA(stage.stage_def->music_channel);
+		Audio_ChannelXA(stage.stage_def->channel);
 		stage.flag |= STAGE_FLAG_VOCAL_ACTIVE;
 	}
 }
@@ -273,7 +275,7 @@ static void Stage_CutVocal(void)
 {
 	if (stage.flag & STAGE_FLAG_VOCAL_ACTIVE)
 	{
-		Audio_ChannelXA(stage.stage_def->music_channel + 1);
+		Audio_ChannelXA(stage.stage_def->channel + 1);
 		stage.flag &= ~STAGE_FLAG_VOCAL_ACTIVE;
 	}
 }
@@ -419,7 +421,8 @@ static u8 Stage_HitNote(PlayerState *this, u8 type, fixed_t offset)
 	
 	//Restore vocals and health
 	Stage_StartVocal();
-	this->health += 230;
+	if (!stage.movie_is_playing)
+		this->health += 230;
 	
 	//Create combo object telling of our combo
 	Obj_Combo *combo = Obj_Combo_New(
@@ -478,9 +481,6 @@ static void Stage_MissNote(PlayerState *this)
 
 static void Stage_NoteCheck(PlayerState *this, u8 type)
 {
-	if (audio_skipped)
-			return;
-
 	//Perform note check
 	for (Note *note = stage.cur_note;; note++)
 	{	
@@ -519,7 +519,8 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 			//Hit the mine
 			note->type |= NOTE_FLAG_HIT;
 	
-			this->health += 230;
+			if (!stage.movie_is_playing)
+				this->health += 230;
 
 			if (this->character->spec & CHAR_SPEC_MISSANIM)
 				this->character->set_anim(this->character, note_anims[type % stage.keys][2]);
@@ -542,8 +543,9 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 			
 			//Hit the mine
 			note->type |= NOTE_FLAG_HIT;
-	
-			this->health += 230;
+			
+			if (!stage.movie_is_playing)
+				this->health += 230;
 
 			if (this->character->spec & CHAR_SPEC_MISSANIM)
 				this->character->set_anim(this->character, note_anims[type % stage.keys][2]);
@@ -672,8 +674,6 @@ static void Stage_NoteCheck(PlayerState *this, u8 type)
 
 static void Stage_SustainCheck(PlayerState *this, u8 type)
 {
-	if (audio_skipped)
-			return;
 
 	//Perform note check
 	for (Note *note = stage.cur_note;; note++)
@@ -693,7 +693,8 @@ static void Stage_SustainCheck(PlayerState *this, u8 type)
 		Stage_CheckAnimations(this, note_anims[type % stage.keys][(note->type & NOTE_FLAG_ALT_ANIM) != 0]);
 
 		Stage_StartVocal();
-		this->health += 230;
+		if (!stage.movie_is_playing)
+			this->health += 230;
 		this->arrow_hitan[type % stage.keys] = stage.step_time;
 			
 	}
@@ -859,6 +860,16 @@ void Stage_DrawTexRotateCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst
     fixed_t yz = dst->y;
     fixed_t wz = dst->w;
     fixed_t hz = dst->h;
+	
+	if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1 || tex == &stage.tex_note)
+	{
+		#ifdef STAGE_NOHUD
+			return;
+		#endif
+		
+		if (hudEnabled == 0)
+			return;
+	}
     
     // Calculate the rotated coordinates
     u8 rotationAngle = rotation / FIXED_UNIT;  // Specify the desired rotation angle (in degrees)
@@ -895,6 +906,16 @@ void Stage_DrawTexCol(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixe
     fixed_t yz = dst->y;
     fixed_t wz = dst->w;
     fixed_t hz = dst->h;
+	
+	if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1 || tex == &stage.tex_note)
+	{
+		#ifdef STAGE_NOHUD
+			return;
+		#endif
+		
+		if (hudEnabled == 0)
+			return;
+	}
     
     // Calculate the rotated coordinates
     u8 rotationAngle = rotation / FIXED_UNIT;  // Specify the desired rotation angle (in degrees)
@@ -927,6 +948,16 @@ void Stage_DrawTexCol_FlipX(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst
     fixed_t yz = dst->y;
     fixed_t wz = -dst->w;
     fixed_t hz = dst->h;
+	
+	if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1 || tex == &stage.tex_note)
+	{
+		#ifdef STAGE_NOHUD
+			return;
+		#endif
+		
+		if (hudEnabled == 0)
+			return;
+	}
     
     // Calculate the rotated coordinates with flipping the x-axis
     u8 rotationAngle = rotation / FIXED_UNIT;  // Specify the desired rotation angle (in degrees)
@@ -965,6 +996,16 @@ void Stage_DrawTex_FlipX(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, f
 
 void Stage_DrawTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, u8 r, u8 g, u8 b, fixed_t zoom, fixed_t rotation)
 {
+	if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1 || tex == &stage.tex_note)
+	{
+		#ifdef STAGE_NOHUD
+			return;
+		#endif
+		
+		if (hudEnabled == 0)
+			return;
+	}
+	
     u8 rotationAngle = rotation / FIXED_UNIT;  // Specify the desired rotation angle (in degrees)
     fixed_t cosAngle = FIXED_DEC(MUtil_Cos(rotationAngle), 256);
     fixed_t sinAngle = FIXED_DEC(MUtil_Sin(rotationAngle), 256);
@@ -994,6 +1035,16 @@ void Stage_DrawTexArb(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, cons
 
 void Stage_BlendTexArbCol(Gfx_Tex *tex, const RECT *src, const POINT_FIXED *p0, const POINT_FIXED *p1, const POINT_FIXED *p2, const POINT_FIXED *p3, fixed_t zoom, fixed_t rotation, u8 r, u8 g, u8 b, u8 mode)
 {
+	if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1 || tex == &stage.tex_note)
+	{
+		#ifdef STAGE_NOHUD
+			return;
+		#endif
+		
+		if (hudEnabled == 0)
+			return;
+	}
+	
     u8 rotationAngle = rotation / FIXED_UNIT;  // Specify the desired rotation angle (in degrees)
     fixed_t cosAngle = FIXED_DEC(MUtil_Cos(rotationAngle), 256);
     fixed_t sinAngle = FIXED_DEC(MUtil_Sin(rotationAngle), 256);
@@ -1028,6 +1079,16 @@ void Stage_BlendTex(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixed_
 	fixed_t wz = dst->w;
 	fixed_t hz = dst->h;
 	
+	if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1 || tex == &stage.tex_note)
+	{
+		#ifdef STAGE_NOHUD
+			return;
+		#endif
+		
+		if (hudEnabled == 0)
+			return;
+	}
+	
     // Calculate the rotated coordinates
     u8 rotationAngle = rotation / FIXED_UNIT;  // Specify the desired rotation angle (in degrees)
     fixed_t rotatedX = FIXED_MUL(xz,FIXED_DEC(MUtil_Cos(rotationAngle),256)) - FIXED_MUL(yz,FIXED_DEC(MUtil_Sin(rotationAngle),256));
@@ -1061,11 +1122,14 @@ void Stage_BlendTexV2(Gfx_Tex *tex, const RECT *src, const RECT_FIXED *dst, fixe
 	fixed_t hz = dst->h;
 
 	//Don't draw if HUD and is disabled
-	if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1)
+	if (tex == &stage.tex_hud0 || tex == &stage.tex_hud1 || tex == &stage.tex_note)
 	{
 		#ifdef STAGE_NOHUD
 			return;
 		#endif
+		
+		if (hudEnabled == 0)
+			return;
 	}
 
 	fixed_t l = (SCREEN_WIDTH2  << FIXED_SHIFT) + FIXED_MUL(xz, zoom);// + FIXED_DEC(1,2);
@@ -1251,33 +1315,39 @@ static void Stage_DrawNotes(void)
 				continue;
 			
 			//Miss note if player's note
-			
-			if  ((note->type == NOTE_FLAG_DANGER) && !bot && !audio_skipped)
+			if (stage.movie_is_playing)
 			{
-			   this->health -= 2000;
-			   Stage_CutVocal();
-			   Stage_MissNote(this);
-			}
-			
-			if ((note->type == NOTE_FLAG_STATIC) && !bot && !audio_skipped)
-			{
-				Audio_PlaySound(Sounds[4], 0x3fff);
-				this->health -= 2000;
-				stage.hitstatic = 10;
-				Stage_CutVocal();
-				Stage_MissNote(this);
-			}
-			
-			if (!(note->type & (bot | NOTE_FLAG_HIT | NOTE_FLAG_MINE | NOTE_FLAG_PHANTOM | NOTE_FLAG_POLICE | NOTE_FLAG_MAGIC)) && !bot && !audio_skipped)
-			{
-				if (stage.prefs.mode < StageMode_Net1 || i == ((stage.prefs.mode == StageMode_Net1) ? 0 : 1))
+				if (stage.song_step <= 1312 || stage.song_step >= 1824) // Prevent health decrease between song_step 1312 and 1824
 				{
-					//Missed note
-					Stage_CutVocal();
-					Stage_MissNote(this);
-					this->health -= 475;
+					if ((note->type == NOTE_FLAG_DANGER) && !bot)
+					{
+						this->health -= 2000;
+						Stage_CutVocal();
+						Stage_MissNote(this);
+					}
+
+					if ((note->type == NOTE_FLAG_STATIC) && !bot)
+					{
+						Audio_PlaySound(Sounds[4], 0x3fff);
+						this->health -= 2000;
+						stage.hitstatic = 10;
+						Stage_CutVocal();
+						Stage_MissNote(this);
+					}
+
+					if (!(note->type & (bot | NOTE_FLAG_HIT | NOTE_FLAG_MINE | NOTE_FLAG_PHANTOM | NOTE_FLAG_POLICE | NOTE_FLAG_MAGIC)) && !bot)
+					{
+						if (stage.prefs.mode < StageMode_Net1 || i == ((stage.prefs.mode == StageMode_Net1) ? 0 : 1))
+						{
+							// Missed note
+							Stage_CutVocal();
+							Stage_MissNote(this);
+							this->health -= 475;
+						}
+					}
 				}
 			}
+
 			
 			//Update current note
 			stage.cur_note++;
@@ -1697,7 +1767,7 @@ static void Stage_DrawNotes(void)
 
 static void Stage_TimerGetLength(void)
 {
-	const XA_TrackDef *track_def = &xa_tracks[stage.stage_def->music_track]; //get length of the music
+	const XA_TrackDef *track_def = &xa_tracks[stage.stage_def->track]; //get length of the music
 	stage.timerlength = (track_def->length / 75 / IO_SECT_SIZE) - 1; //convert in seconds
 
 	(void)xa_paths; //just for remove boring warning
@@ -1738,7 +1808,7 @@ static void Stage_TimerTick(void)
 
 		
 	//don't draw timer if "song timer" option not be enable
-	if (stage.prefs. songtimer)
+	if (stage.prefs.songtimer)
 	{
 		char text[0x80];
 
@@ -1746,15 +1816,18 @@ static void Stage_TimerTick(void)
 		sprintf(text, "%d : %s%d", stage.timermin, (stage.timersec > 9) ?"" :"0", stage.timersec); //making this for avoid cases like 1:4
 
 		//Draw text
-		stage.font_cdr.draw_col(&stage.font_cdr,
-		text,
-		FIXED_DEC(-18,1),
-		(stage.prefs.downscroll) ? FIXED_DEC(104,1) : FIXED_DEC(-112,1),
-		FontAlign_Left,
-		255 >> 1,
-		128 >> 1,
-		0 >> 1
-	);
+		if (hudEnabled == 1)
+		{
+				stage.font_cdr.draw_col(&stage.font_cdr,
+				text,
+				FIXED_DEC(-18,1),
+				(stage.prefs.downscroll) ? FIXED_DEC(104,1) : FIXED_DEC(-112,1),
+				FontAlign_Left,
+				255 >> 1,
+				128 >> 1,
+				0 >> 1
+			);
+		}
 
 		//draw square length
 		RECT square_black = {0, 154, 111, 4};
@@ -2021,8 +2094,9 @@ static void Stage_LoadMusic(void)
 	if (stage.gf != NULL)
 		stage.gf->sing_end -= stage.note_scroll;
 	
+	stage.audio_start_pos = 0;
 	//Find music file and begin seeking to it
-	Audio_SeekXA_Track(stage.stage_def->music_track);
+	Audio_SeekXA_Track(stage.stage_def->track, stage.audio_start_pos);
 	
 	//Initialize music state
 	stage.intro = false;
@@ -2082,6 +2156,8 @@ static void Stage_LoadState(void)
 		stage.player_state[i].refresh_score = false;
 		stage.player_state[i].score = 0;
 		stage.song_beat = 0;
+		stage.flash = 0;
+		stage.flashspd = 0;
 		stage.paused = false;
 		strcpy(stage.player_state[i].score_text, "Score: ?");
 		
@@ -2161,6 +2237,13 @@ void Stage_Load(StageId id, StageDiff difficulty, boolean story)
 	stage.stage_def = &stage_defs[stage.stage_id = id];
 	stage.stage_diff = difficulty;
 	stage.story = story;
+	
+	IO_FindFile(&stage.str_grace_lba, "\\STR\\GRACE.STR;1");
+
+	//Check movies
+	//Don't play movie if you are retrying the song
+	if (stage.trans != StageTrans_Reload)
+		Str_CanPlayDef();
 
 	//Load HUD textures
 	Gfx_LoadTex(&stage.tex_hud0, IO_Read("\\STAGE\\HUD0.TIM;1"), GFX_LOADTEX_FREE);
@@ -2288,6 +2371,9 @@ static boolean Stage_NextLoad(void)
 		//Get stage definition
 		stage.stage_def = &stage_defs[stage.stage_id = stage.stage_def->next_stage];
 		
+		//Check movies
+		Str_CanPlayDef();
+		
 		//Load stage background
 		if (load & STAGE_LOAD_STAGE)
 			Stage_LoadStage();
@@ -2377,7 +2463,23 @@ void Stage_Tick(void)
 		stage.trans = StageTrans_Menu;
 		Trans_Start();
 	}
+	
+	if (stage.stage_id == StageId_1_1 && stage.song_step == 1312 && stage.flag & STAGE_FLAG_JUST_STEP && !stage.movie_is_playing)
+	{
+		
+		stage.audio_start_pos = 118;
+		Str_PlayFile(&stage.str_grace_lba);
+		Audio_PlayXA_Track(stage.stage_def->track, 0x40, stage.stage_def->channel, false, stage.audio_start_pos);
+		Audio_WaitPlayXA();
+	}
 
+	if (stage.stage_id == StageId_1_1 && stage.song_step == 1824 && stage.flag & STAGE_FLAG_JUST_STEP && stage.movie_is_playing)
+	{
+		stage.audio_start_pos = 164;
+		Audio_PlayXA_Track(stage.stage_def->track, 0x40, stage.stage_def->channel, false, stage.audio_start_pos);
+		Audio_WaitPlayXA();
+	}
+	
 	if (inctimer)
 		deadtimer ++;
 
@@ -2436,13 +2538,43 @@ void Stage_Tick(void)
 			
 			if (stage.song_step >= 0)
 			{
-				if (stage.paused == false && pad_state.press & PAD_START)
+				if (stage.paused == false && pad_state.press & PAD_START && !stage.movie_is_playing)
 				{
 					stage.pause_scroll = -1;
 					Audio_PauseXA();
 					stage.paused = true;
 					pad_state.press = 0;
 				}
+			}
+			
+
+			if (stage.song_step >= -48 && stage.song_step <= 16)
+			{
+				hudEnabled = 0;
+			}
+			else if (stage.song_step >= 512 && stage.song_step <= 528)
+			{
+				hudEnabled = 0;
+			}
+			else if (stage.song_step >= 1304 && stage.song_step <= 1560)
+			{
+				hudEnabled = 0;
+			}
+			else if (stage.song_step >= 2080 && stage.song_step <= 2084)
+			{
+				hudEnabled = 0;
+			}
+			else if (stage.song_step >= 2208 && stage.song_step <= 2224)
+			{
+				hudEnabled = 0;
+			}
+			else if (stage.song_step >= 2364 && stage.song_step <= 5500)
+			{
+				hudEnabled = 0;
+			}
+			else
+			{
+				hudEnabled = 1;
 			}
 			
 			//Update the keys
@@ -2521,7 +2653,7 @@ void Stage_Tick(void)
 			if (stage.prefs.debug)
 				Debug_Tick();
 			
-			FntPrint("step %d, beat %d, song_time %d\n", stage.song_step, stage.song_beat, Audio_TellXA_Milli());
+			//FntPrint("step %d, beat %d, song_time %d\n", stage.song_step, stage.song_beat, Audio_TellXA_Milli());
 
 			if (noteshake) 
 			{
@@ -2572,7 +2704,7 @@ void Stage_Tick(void)
 						//Song has started
 						playing = true;
 
-						Audio_PlayXA_Track(stage.stage_def->music_track, 0x40, stage.stage_def->music_channel, 0);
+						Audio_PlayXA_Track(stage.stage_def->track, 0x40, stage.stage_def->channel, false, 0);
 							
 						//Update song time
 						fixed_t audio_time = (fixed_t)Audio_TellXA_Milli() - stage.offset;
@@ -2593,7 +2725,12 @@ void Stage_Tick(void)
 				}
 				else if (Audio_PlayingXA())
 				{
-					fixed_t audio_time_pof = (fixed_t)Audio_TellXA_Milli();
+					fixed_t audio_time_pof;
+
+					if (stage.movie_is_playing)
+						audio_time_pof = stage.audio_last_pos_before_movie + stage.movie_pos;
+					else
+						audio_time_pof = (fixed_t)Audio_TellXA_Milli();
 					fixed_t audio_time = (audio_time_pof > 0) ? (audio_time_pof - stage.offset) : 0;
 					
 					if (stage.prefs.expsync)
@@ -2792,8 +2929,7 @@ void Stage_Tick(void)
 			else
 				Stage_FocusCharacter(stage.player);
 			Stage_ScrollCamera();
-
-			//Draw Timer
+			
 			if (stage.prefs.songtimer)
 				Stage_TimerTick();
 
@@ -2815,6 +2951,7 @@ void Stage_Tick(void)
 					Stage_DrawTex(&stage.tex_hud0, &skill_issue_src, &skill_issue_dst, stage.bump, stage.camera.hudangle);
 			}
 			
+			
 			//Draw score
 			for (int i = 0; i < ((stage.prefs.mode == StageMode_2P) ? 2 : 1); i++)
 			{
@@ -2831,15 +2968,18 @@ void Stage_Tick(void)
 				}
 							
 				//Draw text
-				stage.font_cdr.draw_col(&stage.font_cdr,
-					this->score_text,
-					(stage.prefs.mode == StageMode_2P && i == 0) ? FIXED_DEC(10,1) : (stage.prefs.mode == StageMode_2P && i == 1) ? FIXED_DEC(-36,1) : FIXED_DEC(0,1),
-					(stage.prefs.downscroll) ? FIXED_DEC(-116,1) : FIXED_DEC(108,1),
-					(stage.prefs.mode == StageMode_2P && i == 0) ? FontAlign_Left : FontAlign_Center,
-					255 >> 1,
-					128 >> 1,
-					0 >> 1
-				);
+				if (hudEnabled == 1)
+				{
+					stage.font_cdr.draw_col(&stage.font_cdr,
+						this->score_text,
+						(stage.prefs.mode == StageMode_2P && i == 0) ? FIXED_DEC(10,1) : (stage.prefs.mode == StageMode_2P && i == 1) ? FIXED_DEC(-36,1) : FIXED_DEC(0,1),
+						(stage.prefs.downscroll) ? FIXED_DEC(-116,1) : FIXED_DEC(108,1),
+						(stage.prefs.mode == StageMode_2P && i == 0) ? FontAlign_Left : FontAlign_Center,
+						255 >> 1,
+						128 >> 1,
+						0 >> 1
+					);
+				}	
 			}
 			
 			switch (stage.prefs.mode)
@@ -2888,16 +3028,57 @@ void Stage_Tick(void)
 				}
 			}
 			
-			if (!stage.prefs.debug)
+			//Tick note splashes
+			ObjectList_Tick(&stage.objlist_splash);
+			
+			//Draw stage notes
+			Stage_DrawNotes();
+			
+			//Draw note HUD
+			RECT note_src = {0, 0, stage.note.size, stage.note.size};
+			RECT_FIXED note_dst = {0, stage.note.y - FIXED_DEC(stage.note.size / 2,1), FIXED_DEC(stage.note.size,1), FIXED_DEC(stage.note.size,1)};
+			if (stage.prefs.downscroll)
+				note_dst.y = -note_dst.y - note_dst.h;
+			
+			for (u8 i = 0; i < stage.keys; i++)
 			{
-				if (stage.player_state[0].health <= 0)
-				{
-					stage.player_state[0].health = 0;
-					stage.state = StageState_Dead;
-				}
+				//BF
+				note_dst.x = stage.note.x[i] - FIXED_DEC(stage.note.size / 2,1);
+				Stage_DrawStrum(i, &note_src, &note_dst);
+				Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, stage.bump, stage.camera.hudangle);
+				
+				//Opponent
+				note_dst.x = stage.note.x[(i + stage.keys)] - FIXED_DEC(stage.note.size / 2,1);
+				Stage_DrawStrum(i + stage.keys, &note_src, &note_dst);
+				Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, stage.bump, stage.camera.hudangle);
+			}
 
-				if (stage.player_state[0].health > 20000)
-					stage.player_state[0].health = 20000;
+			if (stage.movie_is_playing)
+				return;
+			
+			for (int i = 0; i < ((stage.prefs.mode >= StageMode_2P) ? 2 : 1); i++)
+			{
+				if (stage.movie_is_playing)
+					return;
+
+				PlayerState *this = &stage.player_state[i];
+			}
+			
+			if (stage.movie_is_playing == true || stage.prefs.mode < StageMode_2P)
+			{
+				if (stage.song_step <= 1312 || stage.song_step >= 1824) // Prevent health decrease between song_step 1312 and 1824
+				{
+					if (stage.player_state[0].health <= 0)
+					{
+						stage.player_state[0].health = 0;
+						stage.state = StageState_Dead;
+					}
+
+					if (stage.player_state[0].health > 20000)
+					{
+						stage.player_state[0].health = 20000;
+					}
+				}
 
 				//Draw health heads
 				Stage_DrawHealth(stage.player_state[0].health, stage.player->health_i, 1);
@@ -2914,31 +3095,6 @@ void Stage_Tick(void)
 				Stage_DrawTex(&stage.tex_hud1, &health_fill, &health_dst, stage.bump, stage.camera.hudangle);
 				health_dst.w = health_back.w << FIXED_SHIFT;
 				Stage_DrawTex(&stage.tex_hud1, &health_back, &health_dst, stage.bump, stage.camera.hudangle);
-			
-				//Tick note splashes
-				ObjectList_Tick(&stage.objlist_splash);
-				
-				//Draw stage notes
-				Stage_DrawNotes();
-				
-				//Draw note HUD
-				RECT note_src = {0, 0, stage.note.size, stage.note.size};
-				RECT_FIXED note_dst = {0, stage.note.y - FIXED_DEC(stage.note.size / 2,1), FIXED_DEC(stage.note.size,1), FIXED_DEC(stage.note.size,1)};
-				if (stage.prefs.downscroll)
-					note_dst.y = -note_dst.y - note_dst.h;
-				
-				for (u8 i = 0; i < stage.keys; i++)
-				{
-					//BF
-					note_dst.x = stage.note.x[i] - FIXED_DEC(stage.note.size / 2,1);
-					Stage_DrawStrum(i, &note_src, &note_dst);
-					Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, stage.bump, stage.camera.hudangle);
-					
-					//Opponent
-					note_dst.x = stage.note.x[(i + stage.keys)] - FIXED_DEC(stage.note.size / 2,1);
-					Stage_DrawStrum(i + stage.keys, &note_src, &note_dst);
-					Stage_DrawTex(&stage.tex_note, &note_src, &note_dst, stage.bump, stage.camera.hudangle);
-				}
 			}
 			
 			Events_Back();
@@ -3053,7 +3209,7 @@ void Stage_Tick(void)
 			if (stage.player->animatable.anim == PlayerAnim_Dead3)
 			{
 				stage.state = StageState_DeadRetry;
-				Audio_PlayXA_Track(XA_GameOver, 0x40, 1, true);
+				Audio_PlayXA_Track(XA_GameOver, 0x40, 1, true, 0);
 			}
 			break;
 		}

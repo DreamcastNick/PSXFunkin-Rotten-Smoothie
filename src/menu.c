@@ -23,7 +23,6 @@
 
 #include "stage.h"
 #include "save.h"
-#include "character/gf.h"
 
 #include "stdlib.h"
 
@@ -119,7 +118,6 @@ static struct
     int curweek;
 	FontData font_bold, font_arial;
 	
-	Character *gf; //Title Girlfriend
 } menu;
 
 static void CheckAndLoadWeek(int week)
@@ -323,10 +321,8 @@ void Menu_Load(MenuPage page)
 	FontData_Load(&menu.font_bold, Font_Bold);
 	FontData_Load(&menu.font_arial, Font_Arial);
 	
-	menu.gf = Char_GF_New(FIXED_DEC(62,1), FIXED_DEC(-12,1));
 	stage.camera.x = stage.camera.y = FIXED_DEC(0,1);
 	stage.camera.bzoom = FIXED_UNIT;
-	stage.gf_speed = 4;
 	
 	//Initialize menu state
 	menu.select = menu.next_select = 0;
@@ -366,7 +362,7 @@ void Menu_Load(MenuPage page)
     Mem_Free(data);
 
 	//Play menu music
-	Audio_PlayXA_Track(XA_GettinFreaky, 0x40, 0, 1);
+	Audio_PlayXA_Track(XA_GettinFreaky, 0x40, 0, true, 0);
 	Audio_WaitPlayXA();
 	
 	//Set background colour
@@ -376,7 +372,6 @@ void Menu_Load(MenuPage page)
 void Menu_Unload(void)
 {
 	//Free title Girlfriend
-	Character_Free(menu.gf);
     Mem_Free(menu.weeks);
 }
 
@@ -561,15 +556,12 @@ void Menu_Tick(void)
 				RECT press_src = {0, (animf_count & 1) ? 144 : 112, 256, 32};
 				Gfx_BlitTex(&menu.tex_title, &press_src, (SCREEN_WIDTH - 256) / 2, SCREEN_HEIGHT - 48);
 			}
-			
-			//Draw Girlfriend
-			menu.gf->tick(menu.gf);
 			break;
 		}
 		case MenuPage_Main:
 		{
 			static const char *menu_options[] = {
-				"FREEPLAY",
+				"PLAY",
 				"CREDITS",
 				"OPTIONS",
 			};
@@ -851,7 +843,7 @@ void Menu_Tick(void)
 				const char *text;
 				u8 icon;
 			} menu_options[] = {
-				{StageId_1_1, 0xFF9271FD, "BOPEEBO", 0},
+				{StageId_1_1, 0xFF9271FD, "ROTTEN SMOOTHIE", 24},
 			};
 
 			sprintf(menu.scoredisp, "PERSONAL BEST: %d",(
@@ -877,7 +869,7 @@ void Menu_Tick(void)
 
 			//Draw page label
 			menu.font_bold.draw(&menu.font_bold,
-				"FREEPLAY",
+				"",
 				16,
 				SCREEN_HEIGHT - 32,
 				FontAlign_Left
@@ -990,7 +982,41 @@ void Menu_Tick(void)
 				{StageId_1_1, "	PLAYTESTERS", false},
 				{StageId_1_1,    "", false},
 				{StageId_1_1, "ANYONE WHO DOWNLOADED", false},
-				{StageId_1_1, "	THIS ROM", false},
+				{StageId_1_1, "THIS ROM", false},
+				{StageId_1_1,    "", false},
+				{StageId_1_1, "	ROTTEN SMOOTHIE DEV TEAM", false},
+				{StageId_1_1,    "", false},
+				{StageId_1_1, "FRUITEATER", false},
+				{StageId_1_1, " OWNER MUSICIAN AND CHARTER", false},
+				{StageId_1_1, "BALLOON", false},
+				{StageId_1_1, " DIRECTOR ARTIST AND LYRICS WRITER", false},
+				{StageId_1_1, "TINNY", false},
+				{StageId_1_1, " CODER", false},
+				{StageId_1_1, "MELLAMOCARL", false},
+				{StageId_1_1, " ARTIST AND CUTSCENE ANIMATOR", false},
+				{StageId_1_1, "THE VOICE GUY", false},
+				{StageId_1_1, " SINGER", false},
+				{StageId_1_1, "SAVIA", false},
+				{StageId_1_1, " ANIMATOR", false},
+				{StageId_1_1, "MARTINLEBALL", false},
+				{StageId_1_1, " CHARTER AND BEST MEMBER", false},
+				{StageId_1_1,    "", false},
+				{StageId_1_1, " ORIGINAL AUTHORS", false},
+				{StageId_1_1,    "", false},
+				{StageId_1_1, "DANEBOE", false},
+				{StageId_1_1, " ANNOYING ORANGE SERIES", false},
+				{StageId_1_1,    "", false},
+				{StageId_1_1, " CONTRIBUTORS", false},
+				{StageId_1_1,    "", false},
+				{StageId_1_1, "SAKUROLL", false},
+				{StageId_1_1, " ORANGE CHROMATIC", false},
+				{StageId_1_1,    "", false},
+				{StageId_1_1, " SPECIAL THANKS", false},
+				{StageId_1_1,    "", false},
+				{StageId_1_1, "APPLE", false},
+				{StageId_1_1, " MAKING IPHONE", false},
+				{StageId_1_1, "THETERBOBORNATOR", false},
+				{StageId_1_1, " CODING ADVICE", false},
 				{StageId_1_1,    "", false},
 				{StageId_1_1, "	COOL PEOPLE", false},
 				{StageId_1_1,    "", false},
@@ -1007,6 +1033,10 @@ void Menu_Tick(void)
 				{StageId_1_1, "	CREDITS CODE", false},
 				{StageId_1_1,    "", false},
 				{StageId_1_1, "ZERIBEN", false},
+				{StageId_1_1,    "", false},
+				{StageId_1_1, "	CUTSCENE CODE", false},
+				{StageId_1_1,    "", false},
+				{StageId_1_1, "IGORSOU", false},
 			};
 			    
 			//Initialize page

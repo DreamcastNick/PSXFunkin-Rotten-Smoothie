@@ -36,7 +36,6 @@ all: \
 	iso/gf/speaker.tim \
 	iso/week1/back.arc \
 	iso/kitchen/back.arc \
-	iso/kitchen/grace.arc \
 	iso/kitchen/handa.arc \
 	iso/kitchen/handb.arc \
 	iso/kitchen/handc.arc \
@@ -75,7 +74,6 @@ iso/week1/back.arc: iso/week1/back0.tim iso/week1/back1.tim
 
 # Kitchen
 iso/kitchen/back.arc: iso/kitchen/back0.tim iso/kitchen/back1.tim iso/kitchen/cut0.tim
-iso/kitchen/grace.arc: iso/kitchen/grace0.tim iso/kitchen/grace1.tim iso/kitchen/grace2.tim iso/kitchen/grace3.tim iso/kitchen/grace4.tim iso/kitchen/grace5.tim iso/kitchen/grace6.tim iso/kitchen/grace7.tim iso/kitchen/grace8.tim iso/kitchen/grace9.tim iso/kitchen/grace10.tim iso/kitchen/grace11.tim iso/kitchen/grace12.tim iso/kitchen/grace13.tim iso/kitchen/grace14.tim 
 iso/kitchen/handa.arc: iso/kitchen/handa.tim 
 iso/kitchen/handb.arc: iso/kitchen/handb.tim
 iso/kitchen/handc.arc: iso/kitchen/handc.tim

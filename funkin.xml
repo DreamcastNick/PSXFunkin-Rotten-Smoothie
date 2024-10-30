@@ -48,6 +48,10 @@
 				<file name = "pause.tim" type = "data" source = "iso/stage/pause.tim"/>
 			</dir>
 			
+			<dir name = "str">
+				<file name = "grace.str" type = "str" source = "iso/movie/grace.str"/>
+			</dir>
+			
 			<!-- Week 1 assets -->
 			<dir name = "week1">
 				<!-- Background art -->
@@ -58,7 +62,6 @@
 			<dir name = "kitchen">
 				<!-- Background art -->
 				<file name = "back.arc" type = "data" source = "iso/kitchen/back.arc"/>
-				<file name = "grace.arc" type = "data" source = "iso/kitchen/grace.arc"/>
 				<file name = "handa.arc" type = "data" source = "iso/kitchen/handa.arc"/>
 				<file name = "handb.arc" type = "data" source = "iso/kitchen/handb.arc"/>
 				<file name = "handc.arc" type = "data" source = "iso/kitchen/handc.arc"/>

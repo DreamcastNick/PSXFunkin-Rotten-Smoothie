@@ -260,17 +260,17 @@ void Char_Apple_Tick(Character *character)
 			this->character.focus_y = FIXED_DEC(-100, 1);
 			this->character.focus_zoom = FIXED_DEC(125,100);
 		}
-		if ((stage.flag & STAGE_FLAG_JUST_STEP) && stage.song_step >= 1312)
+		if ((stage.flag & STAGE_FLAG_JUST_STEP) && stage.song_step >= 1040)
 		{
-			this->character.focus_x = FIXED_DEC(-200, 1);
-			this->character.focus_y = FIXED_DEC(-20, 1);
+			this->character.focus_x = FIXED_DEC(-180, 1);
+			this->character.focus_y = FIXED_DEC(-60, 1);
 			this->character.focus_zoom = FIXED_DEC(100,100);
 		}
 		if ((stage.flag & STAGE_FLAG_JUST_STEP) && stage.song_step >= 1816)
 		{
-			this->character.focus_x = FIXED_DEC(-180, 1);
-			this->character.focus_y = FIXED_DEC(-55, 1);
-			this->character.focus_zoom = FIXED_DEC(90,100);
+			this->character.focus_x = FIXED_DEC(-150, 1);
+			this->character.focus_y = FIXED_DEC(-100, 1);
+			this->character.focus_zoom = FIXED_DEC(96,100);
 		}
 	}
 	

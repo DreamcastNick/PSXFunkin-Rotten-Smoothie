@@ -197,17 +197,17 @@ void Char_Orange_Tick(Character *character)
 			this->character.focus_y = FIXED_DEC(-100, 1);
 			this->character.focus_zoom = FIXED_DEC(125,100);
 		}
-		if ((stage.flag & STAGE_FLAG_JUST_STEP) && stage.song_step >= 1312)
+		if ((stage.flag & STAGE_FLAG_JUST_STEP) && stage.song_step >= 1040)
 		{
-			this->character.focus_x = FIXED_DEC(-200, 1);
-			this->character.focus_y = FIXED_DEC(-20, 1);
+			this->character.focus_x = FIXED_DEC(-40, 1);
+			this->character.focus_y = FIXED_DEC(-60, 1);
 			this->character.focus_zoom = FIXED_DEC(100,100);
 		}
 		if ((stage.flag & STAGE_FLAG_JUST_STEP) && stage.song_step >= 1816)
 		{
 			this->character.focus_x = FIXED_DEC(-80, 1);
-			this->character.focus_y = FIXED_DEC(-50, 1);
-			this->character.focus_zoom = FIXED_DEC(90,100);
+			this->character.focus_y = FIXED_DEC(-85, 1);
+			this->character.focus_zoom = FIXED_DEC(96,100);
 		}
 	}
 	
