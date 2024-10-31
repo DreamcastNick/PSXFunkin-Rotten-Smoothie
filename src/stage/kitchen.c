@@ -12,6 +12,7 @@
 #include "../random.h"
 #include "../timer.h"
 #include "../animation.h"
+#include <stdlib.h>
 
 //Kitchen background structure
 typedef struct
@@ -160,26 +161,91 @@ void Kitchen_HandC_Draw(Back_Kitchen* this, fixed_t x, fixed_t y)
 
 void Back_Kitchen_DrawHUD(StageBack *back)
 {
-	Back_Kitchen *this = (Back_Kitchen*)back;
-	
-	fixed_t fx, fy;
-	
-	fx = stage.camera.x;
-	fy = stage.camera.y;
-	
-	if (stage.song_step == 784)
-	{
-		this->fade = FIXED_DEC(255,1);
-		this->fadespd = FIXED_DEC(175,1);
-	}
-	if (this->fade > 0)
-	{
-		RECT flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
-		u8 flash_col = this->fade >> FIXED_SHIFT;
-		Gfx_BlendRect(&flash, flash_col, flash_col, flash_col, 2);
-		if (stage.paused == false)
-			this->fade -= FIXED_MUL(this->fadespd, timer_dt);
-	}
+    Back_Kitchen *this = (Back_Kitchen*)back;
+    
+    fixed_t fx, fy;
+    
+    fx = stage.camera.x;
+    fy = stage.camera.y;
+    
+    if (stage.song_step == 784)
+    {
+        this->fade = FIXED_DEC(255,1);
+        this->fadespd = FIXED_DEC(175,1);
+    }
+    if (this->fade > 0)
+    {
+        RECT flash = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+        u8 flash_col = this->fade >> FIXED_SHIFT;
+        Gfx_BlendRect(&flash, flash_col, flash_col, flash_col, 2);
+        if (!stage.paused)
+            this->fade -= FIXED_MUL(this->fadespd, timer_dt);
+    }
+
+    // Persistent fruit variables to maintain state between steps
+    static int last_fruit_step = 1824;
+    static int random_fruit = -1;
+    static RECT src;
+    static RECT_FIXED dst;
+    static boolean fruit_active = false;
+
+    // Reset when stage is restarted (before step 1824)
+    if (stage.song_step == 0)
+    {
+        last_fruit_step = 1824;
+        fruit_active = false;
+    }
+
+    // Trigger a new fruit every 128 steps starting from step 1824
+    if (stage.song_step >= 1824 && (stage.song_step - last_fruit_step) >= 128)
+    {
+        last_fruit_step = stage.song_step; // Update the last trigger step
+
+        // Choose a new random fruit and its starting x, y position
+        random_fruit = rand() % 4; // 4 fruits in total
+        fixed_t start_x = FIXED_DEC(-100 - (rand() % 157), 1); // Random x in range -100 to -256
+        fixed_t start_y = FIXED_DEC(-100 - (rand() % 157), 1); // Random y in range -100 to -256
+
+        // Set fruit source based on random selection
+        switch (random_fruit)
+        {
+            case 0:
+                src.x = 128; src.y = 128; src.w = 64; src.h = 64;
+                break;
+            case 1:
+                src.x = 192; src.y = 128; src.w = 64; src.h = 64;
+                break;
+            case 2:
+                src.x = 128; src.y = 192; src.w = 64; src.h = 64;
+                break;
+            case 3:
+                src.x = 192; src.y = 192; src.w = 64; src.h = 64;
+                break;
+        }
+
+        // Set destination starting position and mark fruit as active
+        dst.x = start_x - fx;
+        dst.y = start_y - fy;
+        dst.w = FIXED_DEC(128, 1);
+        dst.h = FIXED_DEC(128, 1);
+        fruit_active = true;
+    }
+
+    // If fruit is active, move it and draw it
+    if (fruit_active)
+    {
+        // Move the fruit across the screen with a fixed speed
+        dst.x += FIXED_DEC(2, 1); // Speed along x-axis
+        dst.y += FIXED_DEC(1, 1); // Speed along y-axis
+
+        Stage_DrawTex(&this->tex_back0, &src, &dst, stage.camera.bzoom, stage.camera.angle);
+
+        // Deactivate fruit after the next 128 steps
+        if ((stage.song_step - last_fruit_step) >= 128)
+        {
+            fruit_active = false;
+        }
+    }
 }
 
 void Back_Kitchen_DrawFG(StageBack *back)
@@ -286,20 +352,20 @@ void Back_Kitchen_DrawFG(StageBack *back)
 				soundtext_dst.w = FIXED_DEC(95 + SCREEN_WIDEOADD, 1);
 				break;
 			case 2216:
-				soundtext_src.w = 129;
-				soundtext_dst.w = FIXED_DEC(129 + SCREEN_WIDEOADD, 1);
+				soundtext_src.w = 131;
+				soundtext_dst.w = FIXED_DEC(131 + SCREEN_WIDEOADD, 1);
 				break;
 			case 2217:
-				soundtext_src.w = 129;
-				soundtext_dst.w = FIXED_DEC(129 + SCREEN_WIDEOADD, 1);
+				soundtext_src.w = 131;
+				soundtext_dst.w = FIXED_DEC(131 + SCREEN_WIDEOADD, 1);
 				break;
 			case 2218:
-				soundtext_src.w = 129;
-				soundtext_dst.w = FIXED_DEC(129 + SCREEN_WIDEOADD, 1);
+				soundtext_src.w = 131;
+				soundtext_dst.w = FIXED_DEC(131 + SCREEN_WIDEOADD, 1);
 				break;
 			case 2219:
-				soundtext_src.w = 129;
-				soundtext_dst.w = FIXED_DEC(129 + SCREEN_WIDEOADD, 1);
+				soundtext_src.w = 131;
+				soundtext_dst.w = FIXED_DEC(131 + SCREEN_WIDEOADD, 1);
 				break;
 			case 2220:
 				soundtext_src.w = 197;
@@ -451,7 +517,7 @@ void Back_Kitchen_DrawMD(StageBack *back)
             this->handa_y = FIXED_DEC(256, 1);
             this->handc_y = FIXED_DEC(256, 1);
         }
-        else if (stage.song_step >= 1954 && stage.song_step <= 1924)
+        else if (stage.song_step >= 1924 && stage.song_step <= 1948)
         {
             fixed_t rise_speed = FIXED_DEC(16, 1);  // Adjust speed as needed
 
@@ -463,7 +529,7 @@ void Back_Kitchen_DrawMD(StageBack *back)
             if (this->handc_y > target_y_handc)
                 this->handc_y -= rise_speed;
         }
-        else if (stage.song_step == 1936)
+        else if (stage.song_step == 1948)
         {
             // Set the final positions once risen
             this->handb_y = target_y_handb;

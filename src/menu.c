@@ -202,7 +202,7 @@ static void Menu_DifficultySelector(s32 x, s32 y)
 	{
 		if (pad_state.press & PAD_LEFT)
 		{
-			if (menu.page_param.stage.diff > StageDiff_Easy)
+			if (menu.page_param.stage.diff > StageDiff_Normal)
 				menu.page_param.stage.diff--;
 			else
 				menu.page_param.stage.diff = StageDiff_Hard;
@@ -212,7 +212,7 @@ static void Menu_DifficultySelector(s32 x, s32 y)
 			if (menu.page_param.stage.diff < StageDiff_Hard)
 				menu.page_param.stage.diff++;
 			else
-				menu.page_param.stage.diff = StageDiff_Easy;
+				menu.page_param.stage.diff = StageDiff_Normal;
 		}
 	}
 	
@@ -227,7 +227,6 @@ static void Menu_DifficultySelector(s32 x, s32 y)
 	
 	//Draw difficulty
 	static const RECT diff_srcs[] = {
-		{160, 96, 62, 19},
 		{ 80, 97, 79, 18},
 		{  1, 96, 78, 19},
 	};

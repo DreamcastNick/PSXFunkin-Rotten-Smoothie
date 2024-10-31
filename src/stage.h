@@ -72,7 +72,6 @@ typedef enum
 
 typedef enum
 {
-	StageDiff_Easy,
 	StageDiff_Normal,
 	StageDiff_Hard,
 

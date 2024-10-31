@@ -204,20 +204,8 @@ boolean noteshake;
 static u32 Sounds[7];
 
 #include "character/apple.h"
-#include "character/bf.h"
 #include "character/orange.h"
-#include "character/dad.h"
-#include "character/spook.h"
-#include "character/monster.h"
-#include "character/pico.h"
-#include "character/exep3.h"
-#include "character/gf.h"
 
-#include "stage/dummy.h"
-#include "stage/week1.h"
-#include "stage/week2.h"
-#include "stage/week3.h"
-#include "stage/trio.h"
 #include "stage/kitchen.h"
 
 static const StageDef stage_defs[StageId_Max] = {
@@ -1946,13 +1934,13 @@ static void Stage_LoadChart(void)
 			"\\MOD1\\MOD1.%d%c.CHT;1", //Week 1 Shaggy
 		};
 		
-		sprintf(chart_path, mod_format[stage.stage_def->week & 0x7F], stage.stage_def->week_song, "ENH"[stage.stage_diff]);
+		sprintf(chart_path, mod_format[stage.stage_def->week & 0x7F], stage.stage_def->week_song, "NH"[stage.stage_diff]);
 	}
 
 	else
 	{
 	//Use standard path convention
-	sprintf(chart_path, "\\CHART\\%d.%d%c.CHT;1", stage.stage_def->week, stage.stage_def->week_song, "ENH"[stage.stage_diff]);
+	sprintf(chart_path, "\\CHART\\%d.%d%c.CHT;1", stage.stage_def->week, stage.stage_def->week_song, "NH"[stage.stage_diff]);
 	}
 	
 	if (stage.chart_data != NULL)
